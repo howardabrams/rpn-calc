@@ -3,10 +3,11 @@
 #+EMAIL:  howard.abrams@gmail.com
 #+DATE:   2016 May 15
 
-The project answers the programming problem in [[https://gist.github.com/ckolbeck/33760242f760f6d82658][this gist]] about making
-a stream calculator in reverse polish notation. The original request
-was to be written in Java, but I decided to use Clojure (because it is
-more fun).
+The project answers a programming problem in [[https://gist.github.com/ckolbeck/33760242f760f6d82658][this gist]] about making a
+stream calculator that calculates in reverse polish notation. While the
+gist request Java, the introduction I received mentioned any language.
+I hoped using Clojure would require a shorter amount of code, and a
+result that was easier to read.
 
 * Homework Problem
 
@@ -63,28 +64,6 @@ more fun).
     Error: Couldn't parse '2.5' as an integer or operator
   #+END_EXAMPLE
 
-* My Changes
-
-  While the original project required that the calculations should
-  only work with Integers, and not with other numeric types. If so,
-  the following conversion may be a good place to start. However, I
-  won't be using this function, and instead using =read-string=, as it
-  will cleanly convert Integers and Reals.
-
-  #+BEGIN_SRC clojure
-    (defn convert-string
-     "Returns the string input as either an Integer or a string-symbol.
-      Any floating point numbers are flagged as an error, and nil is
-      returned."
-      [s]
-      (try
-        (Integer/parseInt s)
-        (catch NumberFormatException e
-          (if (re-matches #"\d*\.\d+" s)
-            (rpn-error "doesn't accept floating point values...yet.")
-            (symbol s)))))
-  #+END_SRC
-
 * Extra Credit
 
   Instead of taking a line at a time, accept a stream of integers and
@@ -92,3 +71,12 @@ more fun).
   put the stack into a bad state, print an error message, drop the bad
   input, and continue on. If the program exits due to an EOF, print
   the current state of the stack before exiting.
+* Final Thoughts
+
+  The original project required that the calculations only work with
+  Integers, so I simply called out to Clojure's built-in =read-string=
+  which the REPL uses to convert a =String= to other Clojure primitives,
+  like =Integer=, symbols, Floats, etc.
+
+  While the parser/tokenizer may create a =Float=, I ignore these during
+  the process phase.
