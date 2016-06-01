@@ -55,9 +55,15 @@
   is the called function, and `stack` is the value to return."
   [op return-value]
   (letfn [(fn-name [fn-object]
-            ;; Using the REPL's demunge function for getting the name
-            ;; of the function, but then we need to use a bit of
-            ;; regexp magic to extract the inside function's name.
+            ;; Warning ... here be dragons ...
+            ;; I need to simply insert the operator in a string, but
+            ;; Clojure, as a JVM language, translates the + function
+            ;; as a PLUS method... and that ain't very readable.
+            ;;
+            ;; Using the REPL's `demunge` function for getting the
+            ;; name of the original function, and then use a bit of
+            ;; regexp magic to extract it from inside what is
+            ;; returned. Hopefully, this is the only alchemy.
 
             (let [dem-fn (repl/demunge (str fn-object))
                   pretty (nth (re-find #"(.*?)/(.*?)@.*" dem-fn) 2)]
