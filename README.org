@@ -1,0 +1,94 @@
+#+TITLE:  RPN Calculator
+#+AUTHOR: Howard Abrams
+#+EMAIL:  howard.abrams@gmail.com
+#+DATE:   2016 May 15
+
+The project answers the programming problem in [[https://gist.github.com/ckolbeck/33760242f760f6d82658][this gist]] about making
+a stream calculator in reverse polish notation. The original request
+was to be written in Java, but I decided to use Clojure (because it is
+more fun).
+
+* Homework Problem
+
+  Write a reverse polish notation calculator in Java. Your calculator
+  should take a RPN statements composed of space separated integers
+  and operators (see below) on a single line from stdin and perform
+  the requested operation. In the event of unparseable input your
+  program should print a sane error message to stderr and continue. If
+  the result of a calculation is not a single integer your program
+  should print the current state of the stack. You should include unit
+  and functional tests. Please don't spend more than 2-3 hours on
+  this.
+
+  Operators:
+
+    +
+        integer addition
+    -
+        integer subtraction
+    *
+        integer multiplication
+    /
+        integer quotient
+    %
+        integer modulus
+    p
+        print: remove and print the top value on the stack
+    d
+        duplicate the value on the top of the stack
+
+* Example Session
+
+  #+BEGIN_EXAMPLE
+    6 7 +
+    13
+
+    4 -2 * 2 *
+    -16
+
+    2 3 4 + d p *
+    7
+    14
+
+    2 8 2 +
+    2 10
+
+    2 +
+    Error: insufficient input for '+' operator
+
+    2 2 r
+    Error: Couldn't parse 'r' as an integer or operator
+
+    2.5 3 +
+    Error: Couldn't parse '2.5' as an integer or operator
+  #+END_EXAMPLE
+
+* My Changes
+
+  While the original project required that the calculations should
+  only work with Integers, and not with other numeric types. If so,
+  the following conversion may be a good place to start. However, I
+  won't be using this function, and instead using =read-string=, as it
+  will cleanly convert Integers and Reals.
+
+  #+BEGIN_SRC clojure
+    (defn convert-string
+     "Returns the string input as either an Integer or a string-symbol.
+      Any floating point numbers are flagged as an error, and nil is
+      returned."
+      [s]
+      (try
+        (Integer/parseInt s)
+        (catch NumberFormatException e
+          (if (re-matches #"\d*\.\d+" s)
+            (rpn-error "doesn't accept floating point values...yet.")
+            (symbol s)))))
+  #+END_SRC
+
+* Extra Credit
+
+  Instead of taking a line at a time, accept a stream of integers and
+  operators on stdin, one per line. If a line is unparseable or would
+  put the stack into a bad state, print an error message, drop the bad
+  input, and continue on. If the program exits due to an EOF, print
+  the current state of the stack before exiting.
